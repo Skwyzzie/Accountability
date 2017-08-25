@@ -10,22 +10,27 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Data.OleDb;
 
 namespace Accountability
 {
     public partial class Form2 : Form
     {
+        OleDbConnection con;
         public Form2()
         {
             InitializeComponent();
+            con = new OleDbConnection("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" + Application.StartupPath + "/Accountability.accdb;Persist Security Info=False;");
         }
-        SqlConnection con;
+        //SqlConnection con;
+        
         private void Button2_Click(object sender, EventArgs e)
         {
-            con = new SqlConnection
-            {
-                ConnectionString = @"Data Source = (LocalDB)\MSSQLLocalDB; AttachDbFilename = " + Application.StartupPath + @"\Accountability.mdf; Integrated Security = True"
-            };
+            //con = new SqlConnection
+            //{
+            //    ConnectionString = @"Data Source = (LocalDB)\MSSQLLocalDB; AttachDbFilename = " + Application.StartupPath + @"\Accountability.mdf; Integrated Security = True"
+            //};
+           
 
             //barcode, lastName, firstName, room, shift, afsc, mtl, inHouse
 
@@ -57,7 +62,7 @@ namespace Accountability
             statement += ", inHouse";
             values += ", 1)";
             string fullStatement = statement + values;
-            SqlCommand command = new SqlCommand(fullStatement, con);
+            OleDbCommand command = new OleDbCommand(fullStatement, con);
             con.Open();
             command.ExecuteNonQuery();
             con.Close();
@@ -66,10 +71,7 @@ namespace Accountability
 
         private void Button1_Click(object sender, EventArgs e)
         {
-            con = new SqlConnection {
-                ConnectionString = @"Data Source = (LocalDB)\MSSQLLocalDB; AttachDbFilename = " + Application.StartupPath + @"\Accountability.mdf; Integrated Security = True"
-            };
-            SqlCommand command;
+            OleDbCommand command;
             openFileDialog1.Filter = "Excel Files|*.xls;*.xlsx";
             openFileDialog1.Title = "Select Airmen DB";
             
@@ -107,7 +109,7 @@ namespace Accountability
                         }
                     }
                     string fullStatement = statement + values;
-                    command = new SqlCommand(fullStatement, con);
+                    command = new OleDbCommand(fullStatement, con);
                     con.Open();
                     command.ExecuteNonQuery();
                     con.Close();

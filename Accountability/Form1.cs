@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data.OleDb;
 using System.Data.SqlClient;
 using System.Windows.Forms;
 
@@ -7,7 +8,8 @@ namespace Accountability {
         public Form1() {
             InitializeComponent();
         }
-        SqlConnection con;
+        //SqlConnection con;
+        OleDbConnection con;
         Airman lastAirman;
         // Add/Remove Airmen
         private void Button1_Click(object sender, EventArgs e) {
@@ -17,19 +19,17 @@ namespace Accountability {
 
         private void Form1_Load(object sender, EventArgs e) {
             // Connect to database
-            con = new SqlConnection {
-                ConnectionString = @"Data Source = (LocalDB)\MSSQLLocalDB; AttachDbFilename = " + Application.StartupPath + @"\Accountability.mdf; Integrated Security = True"
-            };
+            con = new OleDbConnection("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" + Application.StartupPath + "/Accountability.accdb;Persist Security Info=False;");
+            
+            //con = new SqlConnection {
+            //    ConnectionString = @"Data Source = (LocalDB)\MSSQLLocalDB; AttachDbFilename = " + Application.StartupPath + @"\Accountability.mdf; Integrated Security = True"
+            //};
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e) {
             con.Close();
         }
         private string lastId = "";
-        // Triggers the magic
-        private void textBox1_Leave(object sender, EventArgs e) {
-
-        }
 
         // Where the magic happens
         private void updateStuff() {
@@ -41,10 +41,11 @@ namespace Accountability {
             }
 
             //find Airman
-            SqlCommand command = new SqlCommand("SELECT * FROM [dbo].[Airmen] WHERE [barcode] = '" + userId + "'", con);
-            con.Open();
-
-            SqlDataReader reader = command.ExecuteReader();
+            //SqlCommand command = new SqlCommand("SELECT * FROM [dbo].[Airmen] WHERE [barcode] = '" + userId + "'", con);
+            //con.Open();
+            //SqlDataReader reader = command.ExecuteReader();
+            OleDbCommand myQuery = new OleDbCommand("SELECT * FROM [dbo].[Airmen] WHERE [barcode] = '" + userId + "'", con);
+            OleDbDataReader reader = myQuery.ExecuteReader();
             try {
                 string name = null;
                 string room = null;
@@ -180,9 +181,9 @@ namespace Accountability {
 
         private void executeSQLCommand(string statement) {
             try {
-                SqlCommand command = new SqlCommand(statement, con);
+                OleDbCommand myQuery = new OleDbCommand(statement, con); 
                 con.Open();
-                command.ExecuteNonQuery();
+                myQuery.ExecuteNonQuery();
                 con.Close();
             } catch (Exception) {
                 MessageBox.Show("Could not run SQL query: " + statement, "SQL Error", MessageBoxButtons.OK);

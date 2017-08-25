@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data.OleDb;
 using System.Data.SqlClient;
 using System.Windows.Forms;
 
@@ -6,23 +7,26 @@ namespace Accountability
 {
     public partial class outAirmen : Form
     {
+        OleDbConnection con;
         public outAirmen()
         {
             InitializeComponent();
+            con = new OleDbConnection("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" + Application.StartupPath + "/Accountability.accdb;Persist Security Info=False;");
         }
-        SqlConnection con;
+        //SqlConnection con;
+        
         private void outAirmen_Load(object sender, EventArgs e)
         {
             Properties.Settings.Default.Save();
             // Connect to database
-            con = new SqlConnection {
-                ConnectionString = @"Data Source = (LocalDB)\MSSQLLocalDB; AttachDbFilename = " + Application.StartupPath + @"\Accountability.mdf; Integrated Security = True"
-            };
+            //con = new SqlConnection {
+            //    ConnectionString = @"Data Source = (LocalDB)\MSSQLLocalDB; AttachDbFilename = " + Application.StartupPath + @"\Accountability.mdf; Integrated Security = True"
+            //};
 
-            SqlCommand command = new SqlCommand("SELECT * FROM [dbo].[Airmen] WHERE [inHouse] = 'False' ORDER BY [room] ASC;", con);
+            OleDbCommand command = new OleDbCommand("SELECT * FROM [dbo].[Airmen] WHERE [inHouse] = 'False' ORDER BY [room] ASC;", con);
             con.Open();
 
-            SqlDataReader reader = command.ExecuteReader();
+            OleDbDataReader reader = command.ExecuteReader();
             int swingsOut = 0;
             int daysOut = 0;
             int midsOut = 0;
